@@ -10,6 +10,7 @@ import com.intel.util.*;
 // **************************************************************************************************
 
 public class LoginApp extends IntelApplet {
+	private LoginController loginController;
 
 	/**
 	 * This method will be called by the VM when a new session is opened to the Trusted Application 
@@ -24,6 +25,7 @@ public class LoginApp extends IntelApplet {
 	 * 		treated similarly by the VM by sending "cancel" error code to the SW application).
 	 */
 	public int onInit(byte[] request) {
+		loginController = new LoginController();
 		DebugPrint.printString("Hello, DAL!");
 		return APPLET_SUCCESS;
 	}
@@ -37,15 +39,33 @@ public class LoginApp extends IntelApplet {
 	 * @return	the return value should not be used by the applet
 	 */
 	public int invokeCommand(int commandId, byte[] request) {
-		
+		boolean result = false;
+			
 		DebugPrint.printString("Received command Id: " + commandId + ".");
 		if(request != null)
 		{
-			DebugPrint.printString("Received buffer:");
+			DebugPrint.printString("Received passsword: ");
 			DebugPrint.printBuffer(request);
+			
+			String password = new String(request);
+			
+			switch (commandId) {
+			case 1:
+				result = loginController.SetPassword(password);
+				break;
+			case 2:
+				result = loginController.GetAccess(password);
+				break;
+			case 3:
+				result = loginController.ResetPassword(password);
+				break;
+			default:
+				break;
+			}
+			
 		}
 		
-		final byte[] myResponse = { 'O', 'K' };
+		final byte[] myResponse = { (byte) (result ? 1 : 0 ) };
 
 		/*
 		 * To return the response data to the command, call the setResponse
@@ -83,6 +103,7 @@ public class LoginApp extends IntelApplet {
 	 * @return APPLET_SUCCESS code (the status code is not used by the VM).
 	 */
 	public int onClose() {
+		loginController = null;
 		DebugPrint.printString("Goodbye, DAL!");
 		return APPLET_SUCCESS;
 	}
