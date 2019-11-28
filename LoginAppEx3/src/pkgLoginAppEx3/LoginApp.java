@@ -29,6 +29,11 @@ public class LoginApp extends IntelApplet {
 	 */
 	public int onInit(byte[] request) {
 		loginController = new LoginController();
+		if (request.length > 0) {
+			DebugPrint.printString("get access");
+			boolean access = loginController.GetAccess(new String(request));
+			return access ? APPLET_SUCCESS : APPLET_ERROR_GENERIC;
+		}
 		DebugPrint.printString("Hello, DAL!");
 		return APPLET_SUCCESS;
 	}
@@ -50,15 +55,18 @@ public class LoginApp extends IntelApplet {
 
 			String password = new String(request);
 			DebugPrint.printString(password);
+			
+			byte[] res = new byte[200];
+			int len = getSessionId(res, 0);
+			DebugPrint.printString(new String(res).substring(0, len));
 
 			switch (commandId) {
 			case 1:
+				DebugPrint.printString("set new password");
 				result = loginController.SetPassword(password);
 				break;
 			case 2:
-				result = loginController.GetAccess(password);
-				break;
-			case 3:
+				DebugPrint.printString("reset password");
 				result = loginController.ResetPassword(password);
 				break;
 			default:

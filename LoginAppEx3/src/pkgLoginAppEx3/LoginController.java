@@ -38,17 +38,17 @@ public class LoginController {
 	}
 
 	/**
-	 * @commandId 2
+	 * @commandId onInit
 	 * @param password
 	 * @return
 	 */
 	boolean GetAccess(String password) {
-		access = password == _password;
+		access = password.equals(_password);
 		return access;
 	}
 
 	/**
-	 * @commandId 3
+	 * @commandId 2
 	 * @param password
 	 * @return
 	 */

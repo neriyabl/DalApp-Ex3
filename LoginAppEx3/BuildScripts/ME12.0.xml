@@ -26,7 +26,7 @@
 	<!-- Location of the bhc tool-->
 	<property name="bhc_tool" 								value="${tools_location}\BhcTool\bhc.exe"/> 
 	<!-- Set to true if compiling in debug mode, false otherwise -->
-	<property name="debug" 								value="false"/>
+	<property name="debug" 								value="true"/>
 	<!-- The suffix of the .dalp file ; is set when the applet is compiled in debug mode -->
 	<property name="debug_output_suffix" 				value="-debug"/>	
 	<!-- Path to the applet's manifest file (includes path and file name) -->
