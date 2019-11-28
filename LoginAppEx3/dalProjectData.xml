@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="com.dal.pedal.dalMainClassPackage">pkgLoginAppEx3</entry>
+<entry key="com.dal.pedal.vsVersion">VS2015</entry>
+<entry key="com.dal.pedal.dalRunOption">VS</entry>
+<entry key="com.dal.pedal.dalSupportedPlatfom">23</entry>
+<entry key="com.dal.pedal.dalUUID">d7ce28c6-592b-4f92-be18-8a970862ce5e</entry>
+<entry key="com.dal.pedal.dalProjectVersion">DAL_9</entry>
+<entry key="com.dal.pedal.dalMainClassName">LoginApp</entry>
+<entry key="com.dal.pedal.dalHostProjectLocation">C:\Users\user\Desktop\dal projects\DalApp-Ex3\LoginAppEx3Host</entry>
+<entry key="com.dal.pedal.dalActiveManifest">23</entry>
+<entry key="com.dal.pedal.dalHostProjectName">LoginAppEx3Host</entry>
+</properties>

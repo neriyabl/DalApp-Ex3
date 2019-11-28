@@ -1,0 +1,14 @@
+applet.id: d7ce28c6-592b-4f92-be18-8a970862ce5e
+applet.name: LoginAppEx3
+applet.vendor: Intel
+applet.description: This is the LoginAppEx3 applet
+security.version: 1
+applet.version: 1.0
+applet.heap.size: 50000
+applet.flash.quota: 0
+applet.debug.enable: true
+applet.written.by.intel: true
+applet.platform: CSE
+applet.api.level: 9
+applet.access.control: 000000000000ffff
+applet.entry_class: pkgLoginAppEx3.LoginApp
