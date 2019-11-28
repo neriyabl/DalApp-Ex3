@@ -12,7 +12,7 @@ public class LoginController {
 		_password = null;
 		int size = FlashStorage.getFlashDataSize(0);
 		if (size > 0) {
-			byte[] buffer = new byte [size];
+			byte[] buffer = new byte[size];
 			FlashStorage.readFlashData(FILE_NAME, buffer, 0);
 			_password = new String(buffer);
 		}
@@ -30,6 +30,9 @@ public class LoginController {
 			return false;
 		}
 		_password = password;
+		DebugPrint.printString("length: " + _password.length());
+		DebugPrint.printBuffer(_password.getBytes());
+		DebugPrint.printString("file: " + FILE_NAME);
 		FlashStorage.writeFlashData(FILE_NAME, _password.getBytes(), 0, _password.length());
 		return true;
 	}
