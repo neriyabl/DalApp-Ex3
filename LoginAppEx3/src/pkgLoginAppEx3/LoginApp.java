@@ -32,10 +32,11 @@ public class LoginApp extends IntelApplet {
 	public int onInit(byte[] request) {
 		loginController = new LoginController();
 		rsaController = new RSAController();
+		rsaController.generateKeys();
 		if (request.length > 0) {
 			DebugPrint.printString("get access");
 			boolean access = loginController.GetAccess(new String(request));
-			rsaController.generateKeys();
+			
 			return access ? APPLET_SUCCESS : APPLET_ERROR_GENERIC;
 		} else {
 			DebugPrint.printString("Hello, DAL!");
