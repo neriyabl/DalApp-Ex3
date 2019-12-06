@@ -33,8 +33,9 @@ public class LoginApp extends IntelApplet {
 			DebugPrint.printString("get access");
 			boolean access = loginController.GetAccess(new String(request));
 			return access ? APPLET_SUCCESS : APPLET_ERROR_GENERIC;
+		} else {
+			DebugPrint.printString("Hello, DAL!");
 		}
-		DebugPrint.printString("Hello, DAL!");
 		return APPLET_SUCCESS;
 	}
 
@@ -55,7 +56,7 @@ public class LoginApp extends IntelApplet {
 
 			String password = new String(request);
 			DebugPrint.printString(password);
-			
+
 			byte[] res = new byte[200];
 			int len = getSessionId(res, 0);
 			DebugPrint.printString(new String(res).substring(0, len));
