@@ -1,8 +1,8 @@
 package pkgLoginAppEx3;
 
-import com.intel.langutil.*;
 import com.intel.crypto.HashAlg;
 import com.intel.crypto.RsaAlg;
+import com.intel.langutil.ArrayUtils;
 import com.intel.util.FlashStorage;
 
 public class RSAController {
@@ -12,7 +12,9 @@ public class RSAController {
 
 	private final short modulusSize;
 	private byte[] modulus;
+	
 	private RsaAlg rsa;
+	private HashAlg hash;
 
 	private short publicKeySize;
 	private short privateKeySize;
@@ -22,7 +24,8 @@ public class RSAController {
 	public RSAController() {
 		modulusSize = 256;
 		rsa = RsaAlg.create();
-		rsa.setHashAlg(HashAlg.HASH_TYPE_SHA512);
+		rsa.setHashAlg(RsaAlg.HASH_TYPE_SHA512);
+		hash = HashAlg.create(HashAlg.HASH_TYPE_SHA512);
 		tryToGetKeysFromStorage();
 	}
 
@@ -55,19 +58,31 @@ public class RSAController {
 		return null;
 	}
 
+	public byte[] signData(byte[] data) {
+		byte[] dataHashed = new byte[512]; 
+		hash.processComplete(data, (short)0, (short)data.length, dataHashed, (short)0);
+		byte[] buffer = new byte[1000];
+		int signatureLength = rsa.signHash(dataHashed, (short)0, (short) dataHashed.length, buffer, (short)0);
+		byte[] signedData = new byte[signatureLength];
+		ArrayUtils.copyByteArray(buffer, 0, signedData, 0, signatureLength);
+		return signedData;
+	}
+
 	private void tryToGetKeysFromStorage() {
 		try {
 			modulus = new byte[modulusSize];
-			publicKey = new byte[2500];
 			FlashStorage.readFlashData(MODULUS, modulus, 0);
-			publicKeySize = (short)FlashStorage.readFlashData(PUBLIC_KEY_FILE, publicKey, 0);
-			if (publicKeySize == 2500) {
-				// TODO check rest key
-			}
-			privateKeySize = (short)FlashStorage.readFlashData(PRIVATE_KEY_FILE, privateKey, 0);
-			if (privateKeySize == 2500) {
-				// TODO check rest key
-			}
+
+			byte[] buffer = new byte[512];
+			publicKeySize = (short) FlashStorage.readFlashData(PUBLIC_KEY_FILE, buffer, 0);
+			publicKey = new byte[publicKeySize];
+			ArrayUtils.copyByteArray(buffer, 0, publicKey, 0, publicKeySize);
+
+			privateKeySize = (short) FlashStorage.readFlashData(PRIVATE_KEY_FILE, buffer, 0);
+			privateKey = new byte[privateKeySize];
+			ArrayUtils.copyByteArray(buffer, 0, privateKey, 0, privateKeySize);
+			
+			rsa.setKey(modulus, (short)0, modulusSize, publicKey, (short)0, publicKeySize, privateKey, (short)0, privateKeySize);
 		} catch (Exception e) {
 			modulus = null;
 			publicKeySize = 0;

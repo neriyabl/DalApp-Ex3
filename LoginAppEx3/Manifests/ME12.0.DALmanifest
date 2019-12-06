@@ -8,7 +8,7 @@ applet.platform: CSE
 applet.api.level: 9
 applet.description: This is the LoginAppEx3 applet
 applet.entry_class: pkgLoginAppEx3.LoginApp
-applet.flash.quota: 10
+applet.flash.quota: 5000
 applet.debug.enable: true
 applet.written.by.intel: true
 applet.access.control: 000000000000ffff

@@ -1,6 +1,7 @@
 package pkgLoginAppEx3;
 
 import com.intel.util.*;
+import com.intel.langutil.*;
 
 //
 // Implementation of DAL Trusted Application: LoginAppEx3 
@@ -11,6 +12,7 @@ import com.intel.util.*;
 
 public class LoginApp extends IntelApplet {
 	private LoginController loginController;
+	private RSAController rsaController;
 
 	/**
 	 * This method will be called by the VM when a new session is opened to the
@@ -29,9 +31,11 @@ public class LoginApp extends IntelApplet {
 	 */
 	public int onInit(byte[] request) {
 		loginController = new LoginController();
+		rsaController = new RSAController();
 		if (request.length > 0) {
 			DebugPrint.printString("get access");
 			boolean access = loginController.GetAccess(new String(request));
+			rsaController.generateKeys();
 			return access ? APPLET_SUCCESS : APPLET_ERROR_GENERIC;
 		} else {
 			DebugPrint.printString("Hello, DAL!");
@@ -49,10 +53,11 @@ public class LoginApp extends IntelApplet {
 	 */
 	public int invokeCommand(int commandId, byte[] request) {
 		boolean result = false;
+		byte[] myResponse = null;
 
 		DebugPrint.printString("Received command Id: " + commandId + ".");
 		if (request != null) {
-			DebugPrint.printString("Received passsword: ");
+			DebugPrint.printString("Received request: ");
 
 			String password = new String(request);
 			DebugPrint.printString(password);
@@ -62,21 +67,54 @@ public class LoginApp extends IntelApplet {
 			DebugPrint.printString(new String(res).substring(0, len));
 
 			switch (commandId) {
+			case 0:
+				DebugPrint.printString("get keys");
+				byte[][] keys = rsaController.getPublicKey();
+				if (keys != null) {
+					/*
+					 * protocol to send the keys the length is 2 shorts and the length of modulo and
+					 * the key the first 2 bytes is the length of modulo then is the modulo data
+					 * after this 2 bytes for the public key length and then the public key
+					 */
+					short moduloLength = (short) keys[0].length;
+					short keyLength = (short) keys[1].length;
+					myResponse = new byte[4 + moduloLength + keyLength];
+					myResponse[0] = (byte) moduloLength;
+					myResponse[1] = (byte) (moduloLength >> 8);
+					ArrayUtils.copyByteArray(keys[0], 0, myResponse, 2, moduloLength);
+					myResponse[moduloLength + 2] = (byte) keyLength;
+					myResponse[moduloLength + 3] = (byte) (keyLength >> 8);
+					ArrayUtils.copyByteArray(keys[2], 0, myResponse, moduloLength + 4, keyLength);
+				}
+				break;
 			case 1:
 				DebugPrint.printString("set new password");
 				result = loginController.SetPassword(password);
+				myResponse = new byte[] { (byte) (result ? 1 : 0) };
 				break;
 			case 2:
 				DebugPrint.printString("reset password");
 				result = loginController.ResetPassword(password);
+				myResponse = new byte[] { (byte) (result ? 1 : 0) };
 				break;
+			case 3:
+				DebugPrint.printString("generate new keys");
+				rsaController.generateKeys();
+				myResponse = new byte[] {};
+				break;
+			case 4:
+				DebugPrint.printString("generate new keys");
+				rsaController.generateKeys();
+				myResponse = new byte[] {};
+				break;
+			case 5:
+				DebugPrint.printString("sign data");
+				myResponse = rsaController.signData(request);
 			default:
 				break;
 			}
 
 		}
-
-		final byte[] myResponse = { (byte) (result ? 1 : 0) };
 
 		/*
 		 * To return the response data to the command, call the setResponse method
