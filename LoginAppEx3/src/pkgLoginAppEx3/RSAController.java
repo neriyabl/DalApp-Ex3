@@ -69,6 +69,7 @@ public class RSAController {
 			result[0] = new byte[modulusSize];
 			result[1] = new byte[publicKeySize];
 			ArrayUtils.copyByteArray(modulus, 0, result[0], 0, modulusSize);
+			ArrayUtils.copyByteArray(publicKey, 0, result[1], 0, publicKeySize);
 			return result;
 		}
 		return null;
