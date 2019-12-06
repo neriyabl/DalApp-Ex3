@@ -9,12 +9,17 @@ namespace LoginAppEx3Host
 {
     enum CommandsIds
     {
+        GetPublicKey = 0,
         SetPassword = 1,
         ResetPassword = 2,
-
+        GenerateKey = 3,
+        SignData = 4
     }
     class CommmandsController
     {
+
+        const int MAX_MODULO_LENGTH = 256;
+        const int MAX_KEY_LENGTH = 512;
         // This is the UUID of this Trusted Application (TA).
         //The UUID is the same value as the applet.id field in the Intel(R) DAL Trusted Application manifest.
         static readonly string appletID = "d7ce28c6-592b-4f92-be18-8a970862ce5e";
@@ -22,7 +27,9 @@ namespace LoginAppEx3Host
         static Jhi jhi = Jhi.Instance;
         static JhiSession session;
         static JhiSession loginSession;
-        static string publicKey;
+
+        static byte[] publicKey;
+        static byte[] modulus;
 
         public static void connect()
         {
@@ -37,6 +44,7 @@ namespace LoginAppEx3Host
             byte[] initBuffer = new byte[] { }; // Data to send to the applet onInit function
             Console.WriteLine("Opening a session.");
             jhi.CreateSession(appletID, JHI_SESSION_FLAGS.None, initBuffer, out session);
+            GetPublicKey();
 
         }
 
@@ -54,6 +62,26 @@ namespace LoginAppEx3Host
             //Uninstall the Trusted Application
             Console.WriteLine("Uninstalling the applet.");
             jhi.Uninstall(appletID);
+        }
+
+        private static void GetPublicKey()
+        {
+            var keysBuffer = new byte[MAX_KEY_LENGTH + MAX_MODULO_LENGTH + 4];
+            int responseCode;
+            jhi.SendAndRecv2(session, (int)CommandsIds.GetPublicKey, new byte[] { },ref keysBuffer, out responseCode);
+            if(responseCode == (int)CommandsIds.GenerateKey)
+            {
+                short modSize = BitConverter.ToInt16(keysBuffer, 0);
+                modulus = new byte[modSize];
+                Array.Copy(keysBuffer, 2, modulus, 0, modSize);
+                short keySize = BitConverter.ToInt16(keysBuffer, modSize + 2);
+                publicKey = new byte[keySize];
+                Array.Copy(keysBuffer, keySize + 4, publicKey, 0, keySize);
+                Console.WriteLine("modulus:");
+                Console.WriteLine(modulus);
+                Console.WriteLine("public key");
+                Console.WriteLine(publicKey);
+            }
         }
 
         public static bool SetPassword(byte[] password)

@@ -103,11 +103,6 @@ public class LoginApp extends IntelApplet {
 				myResponse = new byte[] {};
 				break;
 			case 4:
-				DebugPrint.printString("generate new keys");
-				rsaController.generateKeys();
-				myResponse = new byte[] {};
-				break;
-			case 5:
 				DebugPrint.printString("sign data");
 				myResponse = rsaController.signData(request);
 			default:
